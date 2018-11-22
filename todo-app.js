@@ -9,14 +9,14 @@ const filters = {
 
 renderTodos(todos,filters);
 
-document.querySelector('#search-todos').addEventListener('input', function (e) {
+document.querySelector('#search-todos').addEventListener('input', (e) => {
     filters.searchTerm = e.target.value
     renderTodos(todos, filters)
 });
 
 // add todo form handler - andrew's solution
 
-document.querySelector('#add-todo-form').addEventListener('submit', function (e) {
+document.querySelector('#add-todo-form').addEventListener('submit', (e) => {
     e.preventDefault();
     todos.push({
         id: uuidv4(),
@@ -28,7 +28,7 @@ document.querySelector('#add-todo-form').addEventListener('submit', function (e)
     e.target.elements.newTodo.value = '';
 });
 
-document.querySelector('#filter-completed').addEventListener('change', function (e) {
+document.querySelector('#filter-completed').addEventListener('change', (e) => {
     filters.hideCompleted = e.target.checked;
     renderTodos(todos, filters);
 });
