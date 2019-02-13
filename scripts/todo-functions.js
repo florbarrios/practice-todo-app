@@ -80,7 +80,7 @@ const generateSummaryDOM = (incompleteTodos) => {
     const statusPara = document.createElement('h3');
     statusPara.classList.add('list-title')
 
-    (incompleteTodos.length === 1) ? statusPara.textContent = `You have ${incompleteTodos.length} todo left.` : statusPara.textContent = `You have ${incompleteTodos.length} todos left.`;
+    statusPara.textContent = (incompleteTodos.length === 1) ? `You have ${incompleteTodos.length} todo left.` : `You have ${incompleteTodos.length} todos left.`;
     
     return statusPara;
 }
