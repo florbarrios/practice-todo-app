@@ -23,7 +23,7 @@ document.querySelector('#add-todo-form').addEventListener('submit', (e) => {
 
     let userInput = e.target.elements.newTodo.value.trim()
 
-    if (userInput.length > 0) {
+    if (userInput.length) {
         todos.push({
             id: uuidv4(),
             text: userInput,
