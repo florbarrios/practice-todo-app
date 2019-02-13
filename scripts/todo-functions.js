@@ -1,7 +1,15 @@
+'use strict'
+
 // Fetch existing todos from localStorage
 const getSavedTodos = () => {
     let todosJSON = localStorage.getItem('todos');
-    return todosJSON !== null ? JSON.parse(todosJSON) : []
+
+    try {
+        return todosJSON ? JSON.parse(todosJSON) : []
+    } catch (e) {
+        return []
+    }
+  
 }
 
 // Save todos to localStorage
@@ -22,14 +30,15 @@ const removeTodo = function (id) {
         return todo.id === id;
     });
 
-    if (todo !== undefined) {
+    if (todo) {
         todo.completed = !todo.completed
     }
  }
 
 // Get the DOM element for an individual note
 const generateTodoDOM = (todo) => {
-    const todoPara = document.createElement('div');
+    const todoPara = document.createElement('label');
+    const containerEl = document.createElement('div')
     const completedCheckbox = document.createElement('input');
     const todoText = document.createElement('span');
     const removeButton = document.createElement('button');
@@ -37,7 +46,7 @@ const generateTodoDOM = (todo) => {
     // Set up todo checkbox
     completedCheckbox.setAttribute('type', 'checkbox');
     completedCheckbox.checked = todo.completed;
-    todoPara.appendChild(completedCheckbox);
+    containerEl.appendChild(completedCheckbox);
     completedCheckbox.addEventListener('change', () => {
         toggleTodo(todo.id);
         saveTodos(todos);
@@ -46,10 +55,16 @@ const generateTodoDOM = (todo) => {
 
     // Set up todo text
     todoText.textContent = todo.text;
-    todoPara.appendChild(todoText);
+    containerEl.appendChild(todoText);
+
+    // Setup container
+    todoPara.classList.add('list-item')
+    containerEl.classList.add('list-item__container')
+    todoPara.appendChild(containerEl)
 
     // Set up todo remove button
-    removeButton.textContent = 'x';
+    removeButton.textContent = 'Remove';
+    removeButton.classList.add('button', 'button--text')
     todoPara.appendChild(removeButton);
     removeButton.addEventListener('click', () => {
         removeTodo(todo.id);
@@ -63,27 +78,42 @@ const generateTodoDOM = (todo) => {
 // Get the DOM element for the list summary
 const generateSummaryDOM = (incompleteTodos) => {
     const statusPara = document.createElement('h3');
-    statusPara.textContent = `You have ${incompleteTodos.length} todos left.`;
+    statusPara.classList.add('list-title')
+
+    statusPara.textContent = (incompleteTodos.length === 1) ? `You have ${incompleteTodos.length} todo left.` : `You have ${incompleteTodos.length} todos left.`;
+    
     return statusPara;
 }
 
 // Render applicaton todos based on filters
 const renderTodos = (todos, filters) => {
+    const todoEl = document.querySelector('#todos')
     const filteredTodos = todos.filter((todo) => {
         const searchTermMatch = todo.text.toLowerCase().includes(filters.searchTerm.toLowerCase());
         const hideCompletedMatch = !filters.hideCompleted || !todo.completed;
         return searchTermMatch && hideCompletedMatch;
     });
 
-    document.querySelector('#todos').innerHTML = '';
+    todoEl.innerHTML = '';
 
     const incompleteTodos = filteredTodos.filter((todo) => !todo.completed)
 
     const statusPara = generateSummaryDOM(incompleteTodos);
-    document.querySelector('#todos').appendChild(statusPara);
+    todoEl.appendChild(statusPara);
 
-    filteredTodos.forEach((todo) => {
-        const todoPara = generateTodoDOM(todo);
-        document.querySelector('#todos').appendChild(todoPara);
-    });
+
+    if (filteredTodos.length > 0) {
+        filteredTodos.forEach((todo) => {
+            const todoPara = generateTodoDOM(todo);
+            todoEl.appendChild(todoPara);
+        });
+    } else {
+        const message = document.createElement('p')
+        message.classList.add('empty-message')
+        message.textContent = 'No to-dos to show.'
+        todoEl.appendChild(message);
+
+    }
+
+    
 }
